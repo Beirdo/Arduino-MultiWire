@@ -1,21 +1,21 @@
 // https://stackoverflow.com/questions/34691478/arduino-as-slave-with-multiple-i2c-addresses
 // https://www.mouser.com/pdfdocs/Gravitech_ATMEGA328_datasheet.pdf
 
-#ifndef TwoWireSimulator_h
-#define TwoWireSimulator_h
+#ifndef __MultiWire_h_
+#define __MultiWire_h_
 
-///////////////////////// wire.h /////////////////////////
 #include <Wire.h>
 
-class TwoWireSimulator: public TwoWire {
+class MultiWire: public TwoWire {
   public:
-    TwoWireSimulator();
     void begin(const uint8_t address, const uint8_t mask);
     void begin(const int address, const int mask);
     void begin(const uint8_t *addressesArray, const uint8_t sizeAddressesArray);
     void begin(const uint8_t *addressesArray, const int sizeAddressesArray);
   
     char lastAddress(void);
+  private:
+    uint8_t _mask;
 };
 
-#endif //TwoWireSimulator_h
+#endif

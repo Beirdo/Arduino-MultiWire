@@ -1,13 +1,8 @@
+#include <Arduino.h>
 #include <Wire.h>
-#include "TwoWireSimulator.h"
+#include "MultiWire.h"
 
-///////////////////////// wire.cpp /////////////////////////
-
-TwoWireSimulator::TwoWireSimulator(){
-  
-}
-
-void TwoWireSimulator::begin(uint8_t address, uint8_t mask)
+void MultiWire::begin(uint8_t address, uint8_t mask)
 { 
  /*
   * ATmega datasheet section 26.9.6:
@@ -18,32 +13,35 @@ void TwoWireSimulator::begin(uint8_t address, uint8_t mask)
   * between the incoming address bit and the corresponding bit in TWAR.
   */
   // set mask address
+  _mask = mask;
   TWAMR = mask << 1;
   TwoWire::begin(address);
 }
 
-void TwoWireSimulator::begin(int address, int mask)
+void MultiWire::begin(int address, int mask)
 {
-  TwoWireSimulator::begin((uint8_t)address, (uint8_t)mask);
+  MultiWire::begin((uint8_t)address, (uint8_t)mask);
 }
 
-void TwoWireSimulator::begin(const uint8_t *addresses, const uint8_t sizeAddresses)
+void MultiWire::begin(const uint8_t *addresses, const uint8_t sizeAddresses)
 {
   uint8_t mask = 0;
   // get all bits that change between each address
-  for(int i=1; i<sizeAddresses; ++i){
+  for(int i = 1; i < sizeAddresses; i++) {
     mask |= (addresses[0] ^ addresses[i]);
   }
+
   // set twi mask address
+  _mask = mask;
   TWAMR = mask << 1;
   TwoWire::begin(addresses[0]);
 }
 
-void TwoWireSimulator::begin(const uint8_t *addressesArray, const int sizeAddressesArray)
+void MultiWire::begin(const uint8_t *addressesArray, const int sizeAddressesArray)
 {
-  TwoWireSimulator::begin(addressesArray, (uint8_t)sizeAddressesArray);
+  MultiWire::begin(addressesArray, (uint8_t)sizeAddressesArray);
 }
 
-char TwoWireSimulator::lastAddress(void){
+char MultiWire::lastAddress(void){
   return TWDR >> 1; // retrieve address from last byte on the bus
 }
